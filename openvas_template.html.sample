@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Scan report for {{ project }}</title>
+		<style type="text/css">
+			table, tr, td {
+				text-align: left;
+				vertical-align: top;
+				padding: 1em;
+			}
+			tr:nth-child(odd) {
+				background-color: #f2f2f2;
+			}
+			tr:first-child {
+				background-color: #ffffff;
+			}
+			th {
+				border-bottom: 1.2pt solid #000000;
+			}
+			td {
+				padding-bottom: 1em;
+			}
+			.selected {
+				background-color: yellow;
+			}
+			.threat_Low {
+				background-color: yellow;
+			}
+			.threat_Medium {
+				background-color: orange;
+			}
+			.threat_High {
+				color: white;
+				background-color: red;
+			}
+			:target {
+				background-color: yellow;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Scan report for {{ project }}</h1>
+		<div>
+			<h2>List of IP:s affected</h2>
+			<table>
+				<tr>
+					<th style="witdh:18em;">IP</th>
+					<th>Severity</th>
+					<th>Threat</th>
+					<th style="width:20em;">Product</th>
+					<th>CVEs</th>
+				</tr>
+				{% set last_host = {} %}
+				{% for data in hosts|sort() %}
+				<tr>
+					{% if not data[0] in last_host %}
+					<td>{{ data[0] }}</td><td>{{ data[1] }}</td><td class="threat_{{ data[2] }}">{{ data[2] }}</td><td>{{ data[3] }}</td>
+					<td>
+						{% do (last_host.update({data[0]: ''})) %}
+					{% else %}
+					<td></td><td>{{data[1]}}</td><td class="threat_{{ data[2] }}">{{ data[2 ]}}</td><td>{{ data[3] }}</td>
+                                        <td>
+					{% endif %}
+					{% for cve in data[4]|sort() %}
+						<a href="#{{ cve }}">{{ cve }}</a>
+					{% endfor %}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+			
+		<div>
+			<h2>Informtion about the CVE:s</h2>
+			<table>
+				<tr>
+					<th style="width:15em;">CVE</th>
+					<th>Severity</th>
+					<th>Threat</th>
+					<th>Description</th>
+				</tr>
+			{% for cve in cves|sort() %}
+				<tr>
+					<td><a name="{{ cve }}">{{ cve }}</a></td>
+					<td>{{ cve_data[cve]['severity'] }}</td>
+					<td class="threat_{{cve_data[cve]['threat']}}">{{ cve_data[cve]['threat'] }}</td>
+					<td>{{ cve_data[cve]['description']|replace("\n", "<br/>") }}</td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+	</body>
+</html>

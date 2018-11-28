@@ -1,0 +1,44 @@
+# Note: this will use the key as mime type, recomended keys are html and plain
+[templates]
+html=openvas_template.html
+plain=openvas_template.txt
+
+[smtp]
+server=
+port=
+user=
+password=
+from=
+# Needs to be changed to "yes" to actually send emails
+send=no
+
+[openvas]
+user=
+password=
+host=
+port=
+# The name of the scan task to look for
+scan=
+
+[openstack]
+user=
+password=
+project=
+domain=
+user_domain=
+url=
+
+# All networks has to have a name, all names has to be unique
+# I would recommend something like floatingip1, floatingip2 .. floatingipN
+# and all ranges are done as CIDR ie 10.0.0.0/8 192.168.0.0/16 etc
+[networks]
+float_range_1=
+
+# All keys are matches to projects and all the space separated emails will be
+# added as recipients for that project
+[recipients]
+admin=
+
+[missing]
+users=
+subject=Projects with missing email addresses

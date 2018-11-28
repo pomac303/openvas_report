@@ -1,0 +1,16 @@
+Scan report for {{ project }}
+
+Hosts affected:
+{% set last_host = {} %}{% for data in hosts|sort() %}{% if not data[0] in last_host %}{{ data[0] }} ----
+		{{ data[3] }} - severity: {{ data[1] }}, threat: {{data[2]}}{% do last_host.update({data[0]:''}) %}{% else %}		{{ data[3] }} - severity: {{ data[1] }}, threat: {{data[2]}}{% endif %}
+		{% filter wordwrap()|replace('\n', '\n\t\t') %}{% for cve in data[4]|sort() %}{{ cve }} {% endfor %}{% endfilter%}
+
+{% endfor %}
+			
+Information about the CVE:s
+{% for cve in cves|sort() %}{{ cve }} - severity: {{cve_data[cve]['severity'] }}, threat: {{cve_data[cve]['threat'] }}
+	{{ cve_data[cve]['description']|wordwrap()|replace('\n', '\n\t') }}
+
+{% endfor %}
+NOTE:	We're using jinja2 for the mail generation and due to bugs it will 
+	wrap akwardly in the text version, sorry about that.
