@@ -212,7 +212,7 @@ def look_for_templates(data):
 def process_data(data):
     """ Process the data and send out any emails """
     server = None
-    if data['config']['smtp']['send'] == 'yes':
+    if data['config']['smtp']['send'] == 'yes' and not DEBUG:
         smtp = data['config']['smtp']
         server = smtplib.SMTP(smtp['server'], smtp['port'])
         server.ehlo()
