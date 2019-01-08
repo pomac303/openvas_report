@@ -195,14 +195,14 @@ def populate_openvas_data(data):
 
                     ret['severity'] = result.find('severity').text
                     ret['threat'] = result.find('threat').text
+                    ret['description'] = result.find('description').text
+
                     hosts[host]['ports'][ret['location']].append(ret)
 
-                if ret['source_name'] not in data['ovs']['data']:
-                    data['ovs']['data'][ret['source_name']] = {'description': result.find('description').text,
-                                                               'threat': ret['threat'], 'severity': ret['severity']}
 
 def look_for_templates(data):
     """ Verify that the templates are available """
+    # Verify that the templates are there early
     for template in data['config']['templates']:
         if not os.path.isfile(data['config']['templates'][template]):
             print("Could not find template for %s at %s" %
@@ -249,7 +249,9 @@ def process_data(data):
                 severity = None
                 for entry in ports[port]:
                     product = entry['product']
-                    cves[entry['source_name']] = {}
+                    cves[entry['source_name']] = {'description': entry['description'],
+                                                  'threat': entry['threat'],
+                                                  'severity': entry['severity']}
                     if not threat or THREAT_MAP[threat] < THREAT_MAP[entry['threat']]:
                         threat = entry['threat']
                     if not severity or severity < entry['severity']:
@@ -268,11 +270,12 @@ def process_data(data):
             env.add_extension('jinja2.ext.do')
             msg.attach(MIMEText(
                 env.from_string(open(data['config']['templates'][template], 'r').read()).render(
-                    project=project, cves=all_cves, cve_data=data['ovs']['data'],
-                    hosts=host_data), template))
+                    project=project, cves=all_cves, hosts=host_data), template))
 
         if server:
             server.send_message(msg)
+        else:
+            print(msg)
     if data['config']['missing']['users'] and len(no_recipients) > 0:
         projects = "\t" + ', '.join(sorted(no_recipients.keys()))
         contents = "Projects missing users with email addresses:\n" + projects

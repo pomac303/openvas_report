@@ -83,9 +83,9 @@
 			{% for cve in cves|sort() %}
 				<tr>
 					<td><a name="{{ cve }}">{{ cve }}</a></td>
-					<td>{{ cve_data[cve]['severity'] }}</td>
-					<td class="threat_{{cve_data[cve]['threat']}}">{{ cve_data[cve]['threat'] }}</td>
-					<td>{{ cve_data[cve]['description']|replace("\n", "<br/>") }}</td>
+					<td>{{ cves[cve]['severity'] }}</td>
+					<td class="threat_{{cve_data[cve]['threat']}}">{{ cves[cve]['threat'] }}</td>
+					<td>{{ cves[cve]['description']|replace("\n", "<br/>") }}</td>
 				</tr>
 			{% endfor %}
 			</table>
