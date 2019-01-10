@@ -8,9 +8,10 @@ Hosts affected:
 {% endfor %}
 			
 Information about the CVE:s
-{% for cve in cves|sort() %}{{ cve }} - severity: {{cves[cve]['severity'] }}, threat: {{cves[cve]['threat'] }}
-	{{ cves[cve]['description']|wordwrap()|replace('\n', '\n\t') }}
+{% for cve in cves|sort() %}{{ cve }}{% for host in cves[cve] %}{% for entry in cves[cve][host] %}
+      * {{ host }} - severity: {{entry['severity'] }}, threat: {{entry['threat'] }}
+	{{ entry['description']|wordwrap()|replace('\n', '\n\t') }}
 
-{% endfor %}
+{% endfor %}{% endfor %}{% endfor %}
 NOTE:	We're using jinja2 for the mail generation and due to bugs it will 
 	wrap akwardly in the text version, sorry about that.

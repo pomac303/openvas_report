@@ -78,15 +78,27 @@
 					<th style="width:15em;">CVE</th>
 					<th>Severity</th>
 					<th>Threat</th>
+					<th>Host</th>
 					<th>Description</th>
 				</tr>
 			{% for cve in cves|sort() %}
+				{% set last_cve = {} %}
+				{% for host in cves[cve] %}
+					{% for entry in cves[cve][host] %}
 				<tr>
+						{% if cve not in last_cve  %}
 					<td><a name="{{ cve }}">{{ cve }}</a></td>
-					<td>{{ cves[cve]['severity'] }}</td>
-					<td class="threat_{{cve_data[cve]['threat']}}">{{ cves[cve]['threat'] }}</td>
-					<td>{{ cves[cve]['description']|replace("\n", "<br/>") }}</td>
+						{% do last_cve.update({cve: ''}) %}
+						{% else %}
+					<td></td>
+						{% endif %}
+					<td>{{ entry['severity'] }}</td>
+					<td class="threat_{{entry['threat']}}">{{ entry['threat'] }}</td>
+					<td>{{ host }}</td>
+					<td>{{ entry['description']|replace("\n", "<br/>") }}</td>
 				</tr>
+					{% endfor %}
+				{% endfor %}
 			{% endfor %}
 			</table>
 		</div>

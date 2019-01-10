@@ -72,7 +72,7 @@ def populate_openstack_data(data):
             exit(1)
         roles = response.json()
         for entry in roles['role_assignments']:
-            if 'scope' in entry and 'user' in entry:
+            if 'scope' in entry and 'user' in entry and 'project' in entry['scope']:
                 user_id = entry['user']['id']
                 project_id = entry['scope']['project']['id']
                 if user_id in users:
@@ -249,9 +249,14 @@ def process_data(data):
                 severity = None
                 for entry in ports[port]:
                     product = entry['product']
-                    cves[entry['source_name']] = {'description': entry['description'],
-                                                  'threat': entry['threat'],
-                                                  'severity': entry['severity']}
+                    cve_info = {'description': entry['description'],
+                                'threat': entry['threat'],
+                                'severity': entry['severity']}
+                    if entry['source_name'] not in cves:
+                        cves[entry['source_name']] = {}
+                    if host not in cves[entry['source_name']]:
+                        cves[entry['source_name']][host] = []
+                    cves[entry['source_name']][host].append(cve_info)
                     if not threat or THREAT_MAP[threat] < THREAT_MAP[entry['threat']]:
                         threat = entry['threat']
                     if not severity or severity < entry['severity']:
